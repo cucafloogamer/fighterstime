@@ -1,7 +1,7 @@
 # Fighter's Time
 
 ## Visión Solvtech
-es un juego de rol (RPG) cooperativo para dispositivos móviles.
+Fighter's Time es un juego de rol (RPG) cooperativo para dispositivos móviles.
 
 En él, los jugadores controlan personajes de diferentes épocas históricas y fantasiosas que son transportados a través de portales temporales para enfrentarse en batallas épicas, con un enfoque dinámico en las batallas y otorgando una amplia variedad de personajes distintos a utilizar.
 
