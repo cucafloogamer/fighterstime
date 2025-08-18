@@ -1,9 +1,9 @@
 # Fighter's Time
 
-## vision Solvtech
+## Visión Solvtech
 es un juego de rol (RPG) cooperativo para dispositivos móviles.
 
-En él, los jugadores controlan personajes de diferentes épocas históricas y fatasiosas que son transportados a través de portales temporales para enfrentarse en batallas épicas, con un enfoque dinámico en las batallas y otorgando una amplia variedad de personajes distintos a utilizar.
+En él, los jugadores controlan personajes de diferentes épocas históricas y fantasiosas que son transportados a través de portales temporales para enfrentarse en batallas épicas, con un enfoque dinámico en las batallas y otorgando una amplia variedad de personajes distintos a utilizar.
 
 El juego es un mundo abierto, en el cual los jugadores pueden explorar el mundo para ganar experiencia (luchando contra NPCs en el mundo abierto), obtener recursos y equipamento, conocer la historia del mundo y mejorar sus habilidades, para luego implementar lo obtenido para combatir en el máximo desafío, la arena.
 
