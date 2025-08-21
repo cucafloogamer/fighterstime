@@ -27,7 +27,7 @@
 - **Sistema de Guardado**: Guardar progreso del jugador
 
 ### 4. Tecnologías Propuestas
-- **Frontend**: Java (Android) o Flutter (multiplataforma)
+- **Frontend**: Kotlin
 - **Base de Datos Local**: SQLite
 - **Estructura**: Patrón MVC (Modelo-Vista-Controlador)
 
