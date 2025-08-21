@@ -9,27 +9,22 @@
   - Ataque
   - Defensa
   - Velocidad
-- **3 Épocas**: Antigua, Medieval, Moderna
 
 ### 2. Sistema de Combate Simplificado
 - **Combate por Turnos**: Cada jugador elige una acción por turno
 - **Acciones Básicas**:
   - Atacar
   - Defender
-  - Usar Item
-  - Habilidad Especial
+
 - **Cálculo de Daño**: Ataque del atacante - Defensa del defensor
 
 ### 3. Estructura del Juego
 - **Menú Principal**: Nuevo Juego, Continuar, Configuración
-- **Selección de Personaje**: Elegir clase y época
-- **Modo Historia**: 5 niveles con enemigos progresivamente más difíciles
+- **Selección de Personaje**: Elegir clase
 - **Sistema de Guardado**: Guardar progreso del jugador
 
 ### 4. Tecnologías Propuestas
 - **Frontend**: Kotlin
-- **Base de Datos Local**: SQLite
-- **Estructura**: Patrón MVC (Modelo-Vista-Controlador)
 
 ## Módulos del Sistema
 
@@ -61,34 +56,21 @@
 - Configuraciones del juego
 ```
 
-### Módulo 5: Lógica del Juego
-```
-- Flujo de niveles
-- Progresión del jugador
-- Sistema de recompensas básico
-```
-
 ## Funcionalidades Mínimas Viables (MVP)
 
 ### Versión 1.0 - Básica
-1. Crear personaje con clase y época
+1. Crear personaje con clase
 2. Combate 1vs1 contra un enemigo
 3. Sistema de turnos funcional
 4. Pantalla de victoria/derrota
 5. Guardado básico
 
-### Versión 2.0 - Mejorada
-1. 5 niveles de historia
-2. Diferentes enemigos por nivel
-3. Sistema de experiencia básico
-4. Mejores gráficos e interfaz
-5. Sonidos básicos
 
 ## Herramientas de Desarrollo
 - **IDE**: Android Studio o Visual Studio Code
 - **Control de Versiones**: Git/GitHub
 - **Diseño**: Figma (para mockups)
-- **Documentación**: Markdown, UML
+- **Documentación**: Markdown
 - **Testing**: JUnit (Java) o framework equivalente
 
 Esta versión está diseñada para ser realista y alcanzable para estudiantes que están aprendiendo programación, enfocándose en conceptos fundamentales de análisis de sistemas y desarrollo de software.
