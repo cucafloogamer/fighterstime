@@ -1,4 +1,4 @@
-# RF03.03 - Base de Datos para Personajes Guardados
+# RF03_03 - Base de Datos para Personajes Guardados
 
 **Responsable:** Juan Beleño  
 **Requerimiento:** RF03.03 - Base de datos que contenga la información personajes guardados  
