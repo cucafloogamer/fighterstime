@@ -38,7 +38,7 @@
 **Funcionalidades mínimas:**
 - ✅ RF03.01 - Guardado de personajes/partida
 - ✅ RF03.02 - Carga de personajes/partida
-- ✅ RF03.03 - Base de datos que contenga la información de cada personaje
+- ✅ RF03.03 - Base de datos que contenga la información persoanjes guardados
 
 **Tecnología:** SharedPreferences (sin base de datos)  
 
