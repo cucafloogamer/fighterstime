@@ -36,9 +36,9 @@
 **Lo que debe hacer:** Recordar el personaje cuando se cierre la app.
 
 **Funcionalidades mínimas:**
-- ✅ RF03.01 - Guardado de personajes/partida
-- ✅ RF03.02 - Carga de personajes/partida
-- ✅ RF03.03 - Base de datos que contenga la información de cada personaje
+- ✅ RF03_01 - Guardado de personajes/partida
+- ✅ RF03_02 - Carga de personajes/partida
+- ✅ RF03_03 - Base de datos que contenga la información persoanjes guardados
 
 **Tecnología:** SharedPreferences (sin base de datos)  
 
