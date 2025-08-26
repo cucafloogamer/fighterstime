@@ -1,27 +1,36 @@
-# RF02: Creación de Personaje - Estadísticas y Clase
+# RF05: Sistema de Combate por Turnos
 
 **Descripción:**  
-El sistema debe proveer una interfaz que permita al jugador seleccionar una clase de personaje (Guerrero, Mago o Arquero) y visualizar las estadísticas base asociadas a dicha clase. Este requerimiento asegura que la lógica de asignación de atributos funcione correctamente antes de la creación final del personaje.
+El juego debe implementar un sistema de combate básico por turnos entre el personaje del jugador y un enemigo, con una duración máxima de 180 segundos (3 minutos). Este sistema será la mecánica principal de interacción del jugador en las batallas del juego.
 
-**Interfaz:**  
-La pantalla de creación de personaje debe incluir selectores claros (por ejemplo, botones) para cada una de las tres clases disponibles: Guerrero, Mago y Arquero.
+**Inicio del Combate:**  
+El combate debe iniciar al entrar en una zona designada o al interactuar con un enemigo en el mapa.
 
-**Visualización de Atributos:**  
-El sistema debe mostrar en pantalla los cuatro atributos clave del personaje:
-- Vida (int)
-- Ataque (int)
-- Defensa (int)
-- Velocidad (int)
+**Asignación de Turno:**  
+La iniciativa del primer turno será asignada al personaje con mayor Velocidad. Si la velocidad es igual, el turno se asignará aleatoriamente.
 
-**Asignación de Estadísticas:**  
-Al seleccionar una clase, el sistema debe actualizar de forma inmediata y automática los valores de los atributos del personaje con los siguientes datos predefinidos:
+**Acciones Disponibles en el Turno del Jugador:**
+- **Atacar:**  
+  El daño infligido se calculará usando la fórmula:  
+  `Daño = (2*Nivel + Control)/5 + 3 * STAB * Tipo1 * Tipo2 * Random`
+  - **Nivel:** Nivel actual del personaje.
+  - **Control:** Atributo de control del personaje.
+  - **STAB:** Bonificación de ataque del mismo tipo (por ejemplo, un ataque de fuego de un mago de fuego).
+  - **Tipo1/Tipo2:** Bonificaciones o penalizaciones de tipo (por ejemplo, fuego contra agua).
+  - **Random:** Un valor aleatorio para variar el daño.
 
-- **Guerrero:** Vida: 150, Ataque: 20, Defensa: 15, Velocidad: 8
-- **Mago:** Vida: 90, Ataque: 30, Defensa: 8, Velocidad: 12
-- **Arquero:** Vida: 120, Ataque: 25, Defensa: 10, Velocidad: 15
+- **Defender:**  
+  El personaje del jugador entrará en una postura defensiva que le permitirá reducir en un 50% el daño del siguiente ataque recibido.
 
-**Rendimiento:**  
-El tiempo de respuesta para la actualización de las estadísticas en pantalla no debe superar los 200 ms.
+**Actualización de Puntos de Vida:**  
+Los puntos de vida (PV) de ambos combatientes (jugador y enemigo) deben actualizarse inmediatamente en la interfaz tras cada acción.
 
-**Responsable:** Grupo Supported / Francisco Villa  
+**Finalización del Combate:**  
+El combate finalizará cuando los puntos de vida de cualquiera de los dos participantes sea menor o igual a 0, o cuando se agote el tiempo de 180 segundos. En ese momento, se mostrará un mensaje de Victoria o Derrota, según corresponda.
+
+**Animaciones:**  
+- Las animaciones de ataque o defensa no deben superar los 2 segundos de duración.
+- La animación de victoria o derrota no debe superar los 3 segundos.
+
+**Responsable:** Supported / Francisco Villa  
 **Prioridad:** Crítica
