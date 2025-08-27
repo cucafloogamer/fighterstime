@@ -29,19 +29,6 @@ En cuanto a la persistencia, este sistema trabaja con un enfoque de almacenamien
 Esto quiere decir que todos los personajes creados y guardados se almacenan en una estructura interna (como una lista de registro). Además, el archivo será guardado en la ruta `"{ruta origen}/files/saves/{nombre del archivo}.sav"`.
 
 
-Ejemplo de código sistema de guardado de personajes:
-
-```java
-    //Guardar personaje
-    fun guardarPersonaje(personaje: Personaje) {
-        personajes.add(personaje)
-    }
-    fun main () {
-    val sistema = SistemaGuardado()
-
-    val guerrero = Personaje 1 ("Nombre personaje", "Clase", 1, 10, 20, 30)
-    }
-```
 
 ### Responsable: 
  
