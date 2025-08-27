@@ -1,4 +1,4 @@
-Pantalla de inicio
+te Pantalla de inicio
 
 La interfaz debe mostrar un menú principal con opciones como Jugar, Opciones, Personajes, Tutorial y Salir.
 

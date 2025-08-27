@@ -1,261 +1,243 @@
-# RF03_03 - Base de Datos para Personajes Guardados
+# RF08 - Base de Datos Firebase Online/Offline
 
 **Responsable:** Juan Beleño  
-**Requerimiento:** RF03.03 - Base de datos que contenga la información personajes guardados  
-**Tecnología:** Android Studio + Kotlin + Room Database  
+**Requerimiento:** RF08 - Sistema de almacenamiento Firebase con modos online/offline  
+**Tecnología:** Android Studio + Kotlin + Firebase Realtime Database  
 
 ---
 
-## 📋 ¿Qué tengo que hacer?
+## 📋 Objetivo del Requerimiento
 
-Crear una **base de datos súper simple** en Android para que la app pueda:
-1. ✅ **Guardar personajes** que crea el usuario
-2. ✅ **Recordar personajes** cuando se abre la app
-3. ✅ **Mostrar lista** de personajes guardados
-
----
-
-## 🗄️ Estructura de la Base de Datos
-
-### Solo 1 Tabla Simple: `personajes`
-
-```sql
-CREATE TABLE personajes (
-    id INTEGER PRIMARY KEY,
-    nombre TEXT NOT NULL,
-    clase TEXT NOT NULL,        -- "Guerrero", "Mago", "Arquero"
-    vida INTEGER DEFAULT 100,
-    ataque INTEGER,
-    defensa INTEGER,
-    velocidad INTEGER
-);
-```
-
-**Ejemplo de datos:**
-```
-id | nombre    | clase    | vida | ataque | defensa | velocidad
-1  | "Arturo"  | "Guerrero"| 100  | 15     | 12      | 8
-2  | "Merlín"  | "Mago"    | 100  | 20     | 6       | 10
-```
+Implementar un **sistema de base de datos híbrido** que permita:
+- ✅ **Funcionamiento offline completo** sin conexión a internet
+- ✅ **Sincronización automática** cuando se recupere la conexión
+- ✅ **Persistencia de datos** tanto local como en la nube
+- ✅ **Transición transparente** entre modos offline/online
+- ✅ **Prueba de conectividad** para validar funcionamiento
 
 ---
 
-## 🔧 Código Kotlin (Para Copiar y Pegar)
+## 📱 Definición de Modos de Almacenamiento
 
-### 1. Clase Personaje
-```kotlin
-@Entity(tableName = "personajes")
-data class Personaje(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val nombre: String,
-    val clase: String,  // "Guerrero", "Mago", "Arquero"
-    val vida: Int = 100,
-    val ataque: Int,
-    val defensa: Int,
-    val velocidad: Int
-)
-```
+### 🔌 Modo OFFLINE (Sin Internet)
 
-### 2. DAO - Para Guardar y Buscar
-```kotlin
-@Dao
-interface PersonajeDao {
-    
-    // Guardar un personaje nuevo
-    @Insert
-    fun guardarPersonaje(personaje: Personaje)
-    
-    // Ver todos los personajes guardados
-    @Query("SELECT * FROM personajes")
-    fun obtenerTodosLosPersonajes(): List<Personaje>
-    
-    // Buscar un personaje por nombre
-    @Query("SELECT * FROM personajes WHERE nombre = :nombre LIMIT 1")
-    fun buscarPersonajePorNombre(nombre: String): Personaje?
-    
-    // Contar cuántos personajes hay
-    @Query("SELECT COUNT(*) FROM personajes")
-    fun contarPersonajes(): Int
-}
-```
+**¿Cómo funciona sin conexión?**
+- Todos los datos se guardan **automáticamente en el dispositivo**
+- Firebase mantiene una **caché local SQLite** con datos recientes
+- El usuario puede realizar **todas las operaciones** normalmente
+- Los cambios se almacenan en **cola de sincronización** interna
 
-### 3. Base de Datos Principal
-```kotlin
-@Database(
-    entities = [Personaje::class],
-    version = 1,
-    exportSchema = false
-)
-abstract class GameDatabase : RoomDatabase() {
-    
-    abstract fun personajeDao(): PersonajeDao
-    
-    companion object {
-        @Volatile
-        private var INSTANCE: GameDatabase? = null
-        
-        fun getDatabase(context: Context): GameDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    GameDatabase::class.java,
-                    "game_database"
-                ).allowMainThreadQueries()  // Solo para aprender, no en producción
-                .build()
-                INSTANCE = instance
-                instance
-            }
-        }
-    }
-}
-```
+**Funcionalidades Disponibles:**
+- ✅ Crear nuevos personajes
+- ✅ Modificar personajes existentes  
+- ✅ Realizar combates y ganar experiencia
+- ✅ Ver lista completa de personajes guardados
+- ✅ Todas las operaciones del juego funcionan normal
+
+**Limitaciones:**
+- ❌ No se sincronizan cambios hasta reconectar
+- ⚠️ Datos solo existen en ese dispositivo específico
+
+### 🌐 Modo ONLINE (Con Internet)
+
+**¿Cómo funciona con conexión?**
+- **Sincronización automática** de todos los cambios pendientes
+- Datos locales se **suben a Firebase** inmediatamente
+- **Actualización en tiempo real** de la base de datos
+- **Descarga automática** de datos nuevos disponibles
+
+**Funcionalidades Adicionales:**
+- ✅ **Respaldo automático** en la nube
+- ✅ **Sincronización entre dispositivos** del mismo usuario
+- ✅ **Persistencia garantizada** - datos nunca se pierden
+- ✅ **Actualizaciones instantáneas** de cambios
+
+### 🔄 Transición Automática Entre Modos
+
+**Al PERDER conexión:**
+1. **Detección automática** de pérdida de red
+2. **Cambio transparente** a modo offline
+3. **Notificación discreta:** "Modo offline activado"
+4. **Continúa funcionando** con datos locales
+
+**Al RECUPERAR conexión:**
+1. **Detección automática** de conexión restaurada
+2. **Sincronización automática** en segundo plano
+3. **Resolución de conflictos** si es necesario
+4. **Notificación:** "Datos sincronizados"
+
+**Gestión de Conflictos:**
+- **Estrategia:** "Último cambio gana" (por timestamp)
+- **Prioridad:** Cambios locales del usuario
+- **Resolución:** Firebase maneja automáticamente
+- **Seguridad:** Respaldo del estado anterior
 
 ---
 
-## 📦 Qué Agregar en build.gradle
+## 💾 Arquitectura de Almacenamiento
 
-En tu archivo `build.gradle (Module: app)`:
-
-```gradle
-dependencies {
-    // Room - Para base de datos fácil
-    implementation "androidx.room:room-runtime:2.4.3"
-    kapt "androidx.room:room-compiler:2.4.3"
-}
+### Almacenamiento Local (Dispositivo):
+```
+📱 Cache SQLite de Firebase
+├── Datos del usuario actual
+├── Cambios pendientes de sincronizar  
+├── Configuración offline
+└── Historial de operaciones
 ```
 
-Y arriba del archivo, agregar:
-```gradle
-apply plugin: 'kotlin-kapt'
+### Almacenamiento en la Nube (Firebase):
+```
+☁️ Firebase Realtime Database
+├── Base de datos completa
+├── Histórico de todos los cambios
+├── Respaldo de todos los usuarios
+└── Reglas de seguridad activas
 ```
 
----
-
-## 🚀 Cómo Usar en las Activities
-
-### Ejemplo 1: Guardar Personaje (en CreateCharacterActivity)
-```kotlin
-class CreateCharacterActivity : AppCompatActivity() {
-    
-    private lateinit var database: GameDatabase
-    
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create_character)
-        
-        // Conectar con la base de datos
-        database = GameDatabase.getDatabase(this)
-        
-        // Cuando el usuario presiona "Crear"
-        buttonCrear.setOnClickListener {
-            val nuevoPersonaje = Personaje(
-                nombre = editTextNombre.text.toString(),
-                clase = claseSeleccionada,  // "Guerrero", "Mago", etc.
-                ataque = ataque,
-                defensa = defensa,
-                velocidad = velocidad
-            )
-            
-            // Guardar en la base de datos
-            database.personajeDao().guardarPersonaje(nuevoPersonaje)
-            
-            // Volver al menú principal
-            finish()
-        }
-    }
-}
-```
-
-### Ejemplo 2: Mostrar Personajes (en MainActivity)
-```kotlin
-class MainActivity : AppCompatActivity() {
-    
-    private lateinit var database: GameDatabase
-    
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        
-        database = GameDatabase.getDatabase(this)
-        
-        // Ver cuántos personajes hay guardados
-        val cantidadPersonajes = database.personajeDao().contarPersonajes()
-        
-        if (cantidadPersonajes > 0) {
-            // Mostrar botón de "Combate"
-            buttonCombate.visibility = View.VISIBLE
-            textPersonajes.text = "Tienes $cantidadPersonajes personajes"
-        } else {
-            // Solo mostrar "Crear Personaje"
-            buttonCombate.visibility = View.GONE
-            textPersonajes.text = "Crea tu primer personaje"
-        }
-    }
-}
-```
+### Políticas de Sincronización:
+- **Inmediata:** Con conexión, cambios se suben al instante
+- **Por lotes:** Sin conexión, cambios se agrupan para sincronizar
+- **Inteligente:** Solo sincroniza datos realmente modificados
+- **Eficiente:** Minimiza el uso de datos móviles
 
 ---
 
-## ✅ Lo que debe funcionar al final
+## 🚀 Configuración Técnica
 
-1. **Crear personaje** → Se guarda en la base de datos
-2. **Cerrar la app** → Los datos no se pierden
-3. **Abrir la app** → Los personajes siguen ahí
-4. **Ver personajes** → Mostrar lista de personajes guardados
+### 1. Setup Firebase Console
 
----
+**Crear Proyecto:**
+1. Ir a [console.firebase.google.com](https://console.firebase.google.com)
+2. Click "Crear un proyecto"
+3. Nombre: `fighters-time-juan-beleno`
+4. Deshabilitar Google Analytics
+5. Click "Crear proyecto"
 
-## 🎯 Plan de Trabajo Simple
+**Configurar Realtime Database:**
+1. En Firebase Console → "Realtime Database"
+2. Click "Crear base de datos"
+3. Seleccionar "Empezar en modo de prueba"
+4. Ubicación: `us-central1`
+5. Click "Listo"
 
-### Paso 1: Configurar Room
-- [ ] Agregar dependencias en build.gradle
-- [ ] Crear la clase Personaje con @Entity
-- [ ] Probar que compila
+**Agregar App Android:**
+1. Click ícono de Android en dashboard
+2. **Nombre del paquete:** `com.fighterstime.app`
+3. **Alias:** `FightersTime`
+4. Registrar app
+5. **Descargar** `google-services.json`
+6. **Copiar** a carpeta `app/` del proyecto
 
-### Paso 2: Crear DAO y Database
-- [ ] Hacer PersonajeDao con métodos básicos
-- [ ] Crear GameDatabase class
-- [ ] Probar que se crea la base de datos
+### 2. Configuración Android Studio
 
-### Paso 3: Conectar con Activities
-- [ ] Usar database en CreateCharacterActivity
-- [ ] Mostrar personajes en MainActivity
-- [ ] Probar guardado y carga
+**build.gradle (Project):**
+- Agregar servicios de Google a nivel de proyecto
+- Configurar classpath para Firebase
 
-### Paso 4: Probar Todo
-- [ ] Crear varios personajes
-- [ ] Cerrar y abrir la app
-- [ ] Verificar que todo funciona
+**build.gradle (Module: app):**
+- Agregar plugins de Firebase
+- Incluir dependencias de Realtime Database
+- Configurar persistencia offline
 
----
+### 3. Configuración de Persistencia
 
-## 🤝 Cómo conectarme con mi equipo
-
-### Para el equipo de UI (pantallas):
-- Les doy métodos simples para guardar personajes
-- Les ayudo a mostrar listas de personajes guardados
-
-### Para el equipo de Lógica (combate):
-- Les paso personajes guardados para usar en combate
-- Ayudo a cargar personaje seleccionado
-
----
-
-## ❓ Dudas que puedo tener
-
-1. **¿Qué es Room?** → Una librería que hace SQLite más fácil
-2. **¿Dónde se guardan los datos?** → En el celular, no se pierden
-3. **¿Puedo ver la base de datos?** → Sí, con herramientas de Android Studio
-4. **¿Qué pasa si algo sale mal?** → Room maneja errores automáticamente
+**Habilitación Offline:**
+- `setPersistenceEnabled(true)` → Activar caché local
+- **Tamaño automático** según espacio disponible
+- **Prioridad:** Datos del usuario actual
+- **Limpieza automática** gestionada por Firebase
 
 ---
 
-## 📝 Notas importantes
+## 🧪 Plan de Pruebas
 
-- ✅ **Empezar simple:** Solo guardar y mostrar personajes
-- ✅ **Probar cada paso:** Un método a la vez
-- ✅ **allowMainThreadQueries():** Solo para aprender, simplifica las cosas
-- ✅ **version = 1:** Si cambio la estructura después, cambiar la versión
+### Prueba de Conectividad Básica:
 
-**Mi objetivo:** Que funcione básico primero, mejorarlo después 🎯
+**Objetivo:** Verificar que Firebase está correctamente configurado
+
+**Proceso:**
+1. Crear MainActivity con layout básico
+2. Botón para "Probar Conexión Firebase"
+3. Enviar datos de prueba a Firebase
+4. Leer datos desde Firebase
+5. Mostrar resultado en pantalla
+6. Verificar datos en Firebase Console
+
+**Resultado Esperado:**
+- ✅ Escritura exitosa en Firebase
+- ✅ Lectura exitosa desde Firebase  
+- ✅ Datos visibles en Firebase Console
+- ✅ Mensaje: "Conexión Firebase exitosa"
+
+### Prueba de Modo Offline:
+
+**Objetivo:** Verificar funcionamiento sin internet
+
+**Proceso:**
+1. Desactivar WiFi y datos móviles
+2. Intentar guardar datos localmente
+3. Verificar que la app sigue funcionando
+4. Reactivar conexión a internet
+5. Verificar sincronización automática
+
+**Resultado Esperado:**
+- ✅ App funciona offline normalmente
+- ✅ Datos se guardan localmente
+- ✅ Al reconectar, datos se sincronizan
+- ✅ No se pierden datos en el proceso
+
+---
+
+## ✅ Checklist de Implementación
+
+### Fase 1: Configuración Base
+- [ ] Crear proyecto Firebase
+- [ ] Descargar y configurar google-services.json
+- [ ] Configurar build.gradle files
+- [ ] Habilitar Realtime Database
+
+### Fase 2: Prueba de Conectividad
+- [ ] Crear MainActivity básico con layout
+- [ ] Implementar botón de prueba de conexión
+- [ ] Probar escritura y lectura básica
+- [ ] Verificar datos en Firebase Console
+- [ ] Documentar resultados de prueba
+
+### Fase 3: Funcionalidad Offline/Online
+- [ ] Configurar persistencia offline
+- [ ] Probar funcionamiento sin internet
+- [ ] Verificar sincronización automática
+- [ ] Probar transición entre modos
+
+### Fase 4: Documentación y Entrega
+- [ ] Documentar estructura de datos final
+- [ ] Crear manual de uso para el equipo
+- [ ] Documentar resultados de todas las pruebas
+- [ ] Preparar demostración del funcionamiento
+
+---
+
+## 🆘 Solución de Problemas
+
+### Error: "google-services.json not found"
+**Solución:** Verificar ubicación exacta en `app/google-services.json`
+
+### Error: "FirebaseDatabase not initialized"  
+**Solución:** Revisar plugin `com.google.gms.google-services` en build.gradle
+
+### Error: "Permission denied"
+**Solución:** Verificar reglas de seguridad en Firebase Console
+
+### Error: "No network connection"
+**Solución:** Firebase funciona offline automáticamente, verificar persistencia
+
+---
+
+## 📚 Recursos de Referencias
+
+- **Firebase Documentation:** [firebase.google.com/docs](https://firebase.google.com/docs)
+- **Android Firebase Guide:** [firebase.google.com/docs/android](https://firebase.google.com/docs/android)  
+- **Offline Capabilities:** [firebase.google.com/docs/database/android/offline-capabilities](https://firebase.google.com/docs/database/android/offline-capabilities)
+- **Stack Overflow:** Para dudas técnicas específicas
+
+---

@@ -34,8 +34,8 @@ Fighter's Time es un juego de rol simple para dispositivos móviles donde los ju
 * **Sistema de Guardado:** Guardar progreso del jugador
 
 ### 4. Tecnologías Propuestas
-* **Frontend:** Java (Android) o Kotlin (multiplataforma)
-* **Base de Datos Local:** SQLite
+* **Frontend:** Kotlin (multiplataforma)
+* **Base de Datos Local:** Firebase
 * **Estructura:** Patrón MVC (Modelo-Vista-Controlador)
 
 ---
