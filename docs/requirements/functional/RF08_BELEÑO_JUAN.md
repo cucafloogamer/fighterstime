@@ -1,355 +1,243 @@
-# 🔥 Firebase Guide - FightersTime
+# RF08 - Base de Datos Firebase Online/Offline
 
-**Proyecto:** Fighter's Time
 **Responsable:** Juan Beleño  
-**Objetivo:** Base de datos online/offline con sincronización en tiempo real  
+**Requerimiento:** RF08 - Sistema de almacenamiento Firebase con modos online/offline  
+**Tecnología:** Android Studio + Kotlin + Firebase Realtime Database  
 
 ---
 
-## 🚀 Pasos para Configurar Firebase
+## 📋 Objetivo del Requerimiento
 
-### 1. Crear Proyecto en Firebase Console
+Implementar un **sistema de base de datos híbrido** que permita:
+- ✅ **Funcionamiento offline completo** sin conexión a internet
+- ✅ **Sincronización automática** cuando se recupere la conexión
+- ✅ **Persistencia de datos** tanto local como en la nube
+- ✅ **Transición transparente** entre modos offline/online
+- ✅ **Prueba de conectividad** para validar funcionamiento
 
+---
+
+## 📱 Definición de Modos de Almacenamiento
+
+### 🔌 Modo OFFLINE (Sin Internet)
+
+**¿Cómo funciona sin conexión?**
+- Todos los datos se guardan **automáticamente en el dispositivo**
+- Firebase mantiene una **caché local SQLite** con datos recientes
+- El usuario puede realizar **todas las operaciones** normalmente
+- Los cambios se almacenan en **cola de sincronización** interna
+
+**Funcionalidades Disponibles:**
+- ✅ Crear nuevos personajes
+- ✅ Modificar personajes existentes  
+- ✅ Realizar combates y ganar experiencia
+- ✅ Ver lista completa de personajes guardados
+- ✅ Todas las operaciones del juego funcionan normal
+
+**Limitaciones:**
+- ❌ No se sincronizan cambios hasta reconectar
+- ⚠️ Datos solo existen en ese dispositivo específico
+
+### 🌐 Modo ONLINE (Con Internet)
+
+**¿Cómo funciona con conexión?**
+- **Sincronización automática** de todos los cambios pendientes
+- Datos locales se **suben a Firebase** inmediatamente
+- **Actualización en tiempo real** de la base de datos
+- **Descarga automática** de datos nuevos disponibles
+
+**Funcionalidades Adicionales:**
+- ✅ **Respaldo automático** en la nube
+- ✅ **Sincronización entre dispositivos** del mismo usuario
+- ✅ **Persistencia garantizada** - datos nunca se pierden
+- ✅ **Actualizaciones instantáneas** de cambios
+
+### 🔄 Transición Automática Entre Modos
+
+**Al PERDER conexión:**
+1. **Detección automática** de pérdida de red
+2. **Cambio transparente** a modo offline
+3. **Notificación discreta:** "Modo offline activado"
+4. **Continúa funcionando** con datos locales
+
+**Al RECUPERAR conexión:**
+1. **Detección automática** de conexión restaurada
+2. **Sincronización automática** en segundo plano
+3. **Resolución de conflictos** si es necesario
+4. **Notificación:** "Datos sincronizados"
+
+**Gestión de Conflictos:**
+- **Estrategia:** "Último cambio gana" (por timestamp)
+- **Prioridad:** Cambios locales del usuario
+- **Resolución:** Firebase maneja automáticamente
+- **Seguridad:** Respaldo del estado anterior
+
+---
+
+## 💾 Arquitectura de Almacenamiento
+
+### Almacenamiento Local (Dispositivo):
+```
+📱 Cache SQLite de Firebase
+├── Datos del usuario actual
+├── Cambios pendientes de sincronizar  
+├── Configuración offline
+└── Historial de operaciones
+```
+
+### Almacenamiento en la Nube (Firebase):
+```
+☁️ Firebase Realtime Database
+├── Base de datos completa
+├── Histórico de todos los cambios
+├── Respaldo de todos los usuarios
+└── Reglas de seguridad activas
+```
+
+### Políticas de Sincronización:
+- **Inmediata:** Con conexión, cambios se suben al instante
+- **Por lotes:** Sin conexión, cambios se agrupan para sincronizar
+- **Inteligente:** Solo sincroniza datos realmente modificados
+- **Eficiente:** Minimiza el uso de datos móviles
+
+---
+
+## 🚀 Configuración Técnica
+
+### 1. Setup Firebase Console
+
+**Crear Proyecto:**
 1. Ir a [console.firebase.google.com](https://console.firebase.google.com)
 2. Click "Crear un proyecto"
-3. Nombre: `fighters-time-[tu-nombre]`
-4. Deshabilitar Google Analytics (no es necesario para este proyecto)
+3. Nombre: `fighters-time-juan-beleno`
+4. Deshabilitar Google Analytics
 5. Click "Crear proyecto"
 
-### 2. Agregar App Android
-
-1. En el dashboard, click el ícono de Android
-2. **Nombre del paquete:** `com.fighterstime.app` 
-3. **Alias de la app:** `FightersTime`
-4. **Certificado SHA-1:** Dejar vacío por ahora
-5. Click "Registrar app"
-
-### 3. Descargar Archivo de Configuración
-
-1. Descargar `google-services.json`
-2. Copiar a la carpeta `app/` de tu proyecto Android Studio
-3. **IMPORTANTE:** Este archivo debe estar en `app/google-services.json`
-
-### 4. Configurar Realtime Database
-
-1. En Firebase Console, ir a "Realtime Database"
+**Configurar Realtime Database:**
+1. En Firebase Console → "Realtime Database"
 2. Click "Crear base de datos"
 3. Seleccionar "Empezar en modo de prueba"
-4. Ubicación: `us-central1` (más cercana)
+4. Ubicación: `us-central1`
 5. Click "Listo"
 
----
+**Agregar App Android:**
+1. Click ícono de Android en dashboard
+2. **Nombre del paquete:** `com.fighterstime.app`
+3. **Alias:** `FightersTime`
+4. Registrar app
+5. **Descargar** `google-services.json`
+6. **Copiar** a carpeta `app/` del proyecto
 
-## 🔧 Configuración de Android Studio
+### 2. Configuración Android Studio
 
-### 1. build.gradle (Project: FightersTime)
-```gradle
-buildscript {
-    ext.kotlin_version = "1.8.20"
-    dependencies {
-        classpath "com.android.tools.build:gradle:8.0.2"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        // Agregar esta línea para Firebase
-        classpath 'com.google.gms:google-services:4.3.15'
-    }
-}
-```
+**build.gradle (Project):**
+- Agregar servicios de Google a nivel de proyecto
+- Configurar classpath para Firebase
 
-### 2. build.gradle (Module: app)
-```gradle
-plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    // Agregar plugin de Firebase
-    id 'com.google.gms.google-services'
-}
+**build.gradle (Module: app):**
+- Agregar plugins de Firebase
+- Incluir dependencias de Realtime Database
+- Configurar persistencia offline
 
-android {
-    compileSdk 34
-    
-    defaultConfig {
-        applicationId "com.fighterstime.app"
-        minSdk 24
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
-    }
-}
+### 3. Configuración de Persistencia
 
-dependencies {
-    implementation 'androidx.core:core-ktx:1.10.1'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.9.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    
-    // Firebase BOM - Maneja todas las versiones de Firebase
-    implementation platform('com.google.firebase:firebase-bom:32.2.3')
-    
-    // Firebase Database - Para datos en tiempo real
-    implementation 'com.google.firebase:firebase-database-ktx'
-    
-    // Firebase Auth - Para autenticación de usuarios
-    implementation 'com.google.firebase:firebase-auth-ktx'
-    
-    // Testing
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-}
-```
+**Habilitación Offline:**
+- `setPersistenceEnabled(true)` → Activar caché local
+- **Tamaño automático** según espacio disponible
+- **Prioridad:** Datos del usuario actual
+- **Limpieza automática** gestionada por Firebase
 
 ---
 
-## 🧪 Prueba Rápida de Conexión
+## 🧪 Plan de Pruebas
 
-### MainActivity.kt (Para probar)
-```kotlin
-package com.fighterstime.app
+### Prueba de Conectividad Básica:
 
-import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
+**Objetivo:** Verificar que Firebase está correctamente configurado
 
-class MainActivity : AppCompatActivity() {
-    
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        
-        val buttonTest = findViewById<Button>(R.id.buttonTestFirebase)
-        val textResult = findViewById<TextView>(R.id.textFirebaseResult)
-        
-        buttonTest.setOnClickListener {
-            probarFirebase(textResult)
-        }
-    }
-    
-    private fun probarFirebase(textResult: TextView) {
-        textResult.text = "Probando conexión con Firebase..."
-        
-        val database = Firebase.database
-        val testRef = database.getReference("test")
-        
-        // Escribir dato de prueba
-        val testData = mapOf(
-            "mensaje" to "¡Firebase funciona!",
-            "timestamp" to System.currentTimeMillis(),
-            "autor" to "Juan Beleño"
-        )
-        
-        testRef.setValue(testData)
-            .addOnSuccessListener {
-                // Si se escribió exitosamente, ahora leer
-                testRef.get().addOnSuccessListener { snapshot ->
-                    if (snapshot.exists()) {
-                        val mensaje = snapshot.child("mensaje").getValue(String::class.java)
-                        textResult.text = "✅ ÉXITO: $mensaje"
-                        textResult.setTextColor(resources.getColor(android.R.color.holo_green_dark))
-                        Toast.makeText(this, "Firebase conectado correctamente", Toast.LENGTH_SHORT).show()
-                    }
-                }.addOnFailureListener {
-                    textResult.text = "❌ Error al leer: ${it.message}"
-                    textResult.setTextColor(resources.getColor(android.R.color.holo_red_dark))
-                }
-            }
-            .addOnFailureListener { exception ->
-                textResult.text = "❌ Error de conexión: ${exception.message}"
-                textResult.setTextColor(resources.getColor(android.R.color.holo_red_dark))
-                Toast.makeText(this, "Error: ${exception.message}", Toast.LENGTH_LONG).show()
-            }
-    }
-}
-```
+**Proceso:**
+1. Crear MainActivity con layout básico
+2. Botón para "Probar Conexión Firebase"
+3. Enviar datos de prueba a Firebase
+4. Leer datos desde Firebase
+5. Mostrar resultado en pantalla
+6. Verificar datos en Firebase Console
 
-### activity_main.xml (Layout básico)
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="20dp"
-    android:gravity="center">
+**Resultado Esperado:**
+- ✅ Escritura exitosa en Firebase
+- ✅ Lectura exitosa desde Firebase  
+- ✅ Datos visibles en Firebase Console
+- ✅ Mensaje: "Conexión Firebase exitosa"
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="FightersTime - Firebase Test"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="30dp" />
+### Prueba de Modo Offline:
 
-    <Button
-        android:id="@+id/buttonTestFirebase"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Probar Conexión Firebase"
-        android:textSize="18sp"
-        android:layout_marginBottom="20dp" />
+**Objetivo:** Verificar funcionamiento sin internet
 
-    <TextView
-        android:id="@+id/textFirebaseResult"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Presiona el botón para probar Firebase"
-        android:textSize="16sp"
-        android:padding="15dp"
-        android:background="#f5f5f5"
-        android:gravity="center" />
+**Proceso:**
+1. Desactivar WiFi y datos móviles
+2. Intentar guardar datos localmente
+3. Verificar que la app sigue funcionando
+4. Reactivar conexión a internet
+5. Verificar sincronización automática
 
-</LinearLayout>
-```
-
----
-
-## 📊 Estructura de Datos Propuesta
-
-### JSON Structure en Firebase:
-```json
-{
-  "users": {
-    "unique_user_id": {
-      "username": "jugador123",
-      "email": "jugador@example.com",
-      "created_at": 1693123456789
-    }
-  },
-  "personajes": {
-    "personaje_unique_id": {
-      "user_id": "unique_user_id",
-      "nombre": "Arturo",
-      "clase": "Guerrero",
-      "nivel": 5,
-      "vida_maxima": 120,
-      "vida_actual": 95,
-      "ataque": 25,
-      "defensa": 18,
-      "experiencia": 750,
-      "experiencia_siguiente_nivel": 1000,
-      "created_at": 1693123456789,
-      "updated_at": 1693123456789
-    }
-  },
-  "combates": {
-    "combate_unique_id": {
-      "personaje_id": "personaje_unique_id",
-      "enemigo": {
-        "nombre": "Goblin Salvaje",
-        "nivel": 3,
-        "vida": 60,
-        "ataque": 15,
-        "defensa": 8
-      },
-      "resultado": "Victoria",
-      "experiencia_ganada": 50,
-      "duracion_turnos": 8,
-      "fecha_combate": 1693123456789
-    }
-  },
-  "test": {
-    "mensaje": "¡Firebase funciona!",
-    "timestamp": 1693123456789,
-    "autor": "Juan Beleño"
-  }
-}
-```
-
----
-
-## 🔐 Reglas de Seguridad Básicas
-
-En Firebase Console > Realtime Database > Reglas:
-
-```javascript
-{
-  "rules": {
-    // Datos de prueba - acceso completo temporalmente
-    "test": {
-      ".read": true,
-      ".write": true
-    },
-    
-    // Usuarios solo pueden leer/escribir sus propios datos
-    "users": {
-      "$uid": {
-        ".read": "$uid === auth.uid",
-        ".write": "$uid === auth.uid"
-      }
-    },
-    
-    // Personajes - solo el dueño puede modificar
-    "personajes": {
-      ".read": true,
-      ".write": "auth != null",
-      "$personaje_id": {
-        ".validate": "newData.hasChildren(['user_id', 'nombre', 'clase'])"
-      }
-    },
-    
-    // Combates - cualquiera puede leer, solo usuarios autenticados escribir
-    "combates": {
-      ".read": true,
-      ".write": "auth != null"
-    }
-  }
-}
-```
+**Resultado Esperado:**
+- ✅ App funciona offline normalmente
+- ✅ Datos se guardan localmente
+- ✅ Al reconectar, datos se sincronizan
+- ✅ No se pierden datos en el proceso
 
 ---
 
 ## ✅ Checklist de Implementación
 
-### Configuración Inicial:
+### Fase 1: Configuración Base
 - [ ] Crear proyecto Firebase
-- [ ] Descargar google-services.json
+- [ ] Descargar y configurar google-services.json
 - [ ] Configurar build.gradle files
 - [ ] Habilitar Realtime Database
 
-### Prueba Básica:
-- [ ] Crear MainActivity con botón de prueba
-- [ ] Probar escritura en Firebase
-- [ ] Probar lectura desde Firebase
+### Fase 2: Prueba de Conectividad
+- [ ] Crear MainActivity básico con layout
+- [ ] Implementar botón de prueba de conexión
+- [ ] Probar escritura y lectura básica
 - [ ] Verificar datos en Firebase Console
+- [ ] Documentar resultados de prueba
 
-### Funcionalidad del Juego:
-- [ ] Crear clase Personaje
-- [ ] Implementar guardado de personajes
-- [ ] Implementar carga de personajes
-- [ ] Probar modo offline
-- [ ] Configurar sincronización automática
+### Fase 3: Funcionalidad Offline/Online
+- [ ] Configurar persistencia offline
+- [ ] Probar funcionamiento sin internet
+- [ ] Verificar sincronización automática
+- [ ] Probar transición entre modos
 
-### Documentación:
-- [ ] Documentar estructura de datos
-- [ ] Crear guía de uso para el equipo
-- [ ] Documentar resultados de pruebas
-- [ ] Manual de configuración
+### Fase 4: Documentación y Entrega
+- [ ] Documentar estructura de datos final
+- [ ] Crear manual de uso para el equipo
+- [ ] Documentar resultados de todas las pruebas
+- [ ] Preparar demostración del funcionamiento
 
 ---
 
-## 🆘 Solución de Problemas Comunes
+## 🆘 Solución de Problemas
 
 ### Error: "google-services.json not found"
-- **Solución:** Verificar que el archivo esté en `app/google-services.json`
+**Solución:** Verificar ubicación exacta en `app/google-services.json`
 
-### Error: "FirebaseDatabase not initialized"
-- **Solución:** Agregar plugin `com.google.gms.google-services` en build.gradle
+### Error: "FirebaseDatabase not initialized"  
+**Solución:** Revisar plugin `com.google.gms.google-services` en build.gradle
 
 ### Error: "Permission denied"
-- **Solución:** Revisar reglas de seguridad en Firebase Console
+**Solución:** Verificar reglas de seguridad en Firebase Console
 
 ### Error: "No network connection"
-- **Solución:** Firebase funciona offline automáticamente, verificar persistencia
+**Solución:** Firebase funciona offline automáticamente, verificar persistencia
 
 ---
 
-## 📞 Recursos de Apoyo
+## 📚 Recursos de Referencias
 
 - **Firebase Documentation:** [firebase.google.com/docs](https://firebase.google.com/docs)
-- **Android Firebase Guide:** [firebase.google.com/docs/android](https://firebase.google.com/docs/android)
-- **Stack Overflow:** Para dudas específicas
-- **YouTube:** "Firebase Android Tutorial" para videos explicativos
+- **Android Firebase Guide:** [firebase.google.com/docs/android](https://firebase.google.com/docs/android)  
+- **Offline Capabilities:** [firebase.google.com/docs/database/android/offline-capabilities](https://firebase.google.com/docs/database/android/offline-capabilities)
+- **Stack Overflow:** Para dudas técnicas específicas
 
-
+---
