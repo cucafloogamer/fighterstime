@@ -1,6 +1,8 @@
 # RF06 - Guardado de datos
 
-Descripción: Este sistema  permitirá al jugador crear y guardar personajes en una lista cuando este se encuentre en partida. El maximo de personajes que este podra guardar sera de 3 personajes en la memoria.
+### Descripción:
+
+Este sistema  permitirá al jugador crear y guardar personajes en una lista cuando este se encuentre en partida. El maximo de personajes que este podra guardar sera de 3 personajes en la memoria.
 
 
 cabe mencionar que cada personaje tendra los siguientes atributos: 
@@ -40,3 +42,11 @@ Ejemplo de código sistema de guardado de personajes:
     val guerrero = Personaje 1 ("Nombre personaje", "Clase", 1, 10, 20, 30)
     }
 ```
+
+### Responsable: 
+ 
+- Grupo Solvtech - Pedro Flores
+
+### Prioridad:
+
+- Alta
