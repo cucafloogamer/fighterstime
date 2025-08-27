@@ -22,7 +22,7 @@ Este sistema debe asegurar que los personajes creados serán guardados en la mem
 En cuanto a la persistencia, este sistema trabaja con un enfoque de almacenamiento en memoria durante la ejecución del programa.
 
 
-En cuanto a la persistencia, este sistema trabaja con un enfoque de almacenamiento en memoria durante la ejecución del programa.
+En cuanto a la persistencia, este sistema trabaja con un enfoque de almacenamiento en memoria. Al cerrar la apicación el personaje/partida queda guardado en un archivo `.sav`
 
 Esto quiere decir que todos los personajes creados y guardados se almacenan en una estructura interna (como una lista de registro).
 
