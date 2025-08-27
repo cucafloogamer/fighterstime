@@ -22,3 +22,14 @@ Los personajes tendrán dos nuevos atributos:
 * La XP necesaria para alcanzar el siguiente nivel se calculará con la fórmula: `XP Requerida = 100 * (Nivel Actual^2)`.
 * Si la experiencia acumulada es igual o mayor a la XP Requerida, el personaje subirá de nivel. Por cada nivel que suba, el jugador recibirá 3 puntos de atributo para gastar.
 * La interfaz de usuario deberá notificar al jugador que ha subido de nivel y tiene puntos disponibles para gastar.
+
+### Menú de Asignación de Atributos
+* Se creará un nuevo menú o pantalla accesible al subir de nivel. En este menú, el jugador podrá distribuir sus puntos de atributo entre los siguientes cuatro atributos principales, con un costo de 1 punto por cada unidad aumentada:
+    * **Puntos de Vida (Vida):** Aumenta la vitalidad del personaje.
+    * **Puntos de Ataque (Ataque):** Incrementa el daño infligido.
+    * **Puntos de Defensa (Defensa):** Reduce el daño recibido.
+    * **Puntos de Velocidad (Velocidad):** Aumenta la velocidad para determinar la iniciativa de turno.
+
+### Persistencia de Datos
+* Los atributos de nivel, experiencia y la asignación de puntos deben ser guardados junto con los demás datos del personaje para asegurar que el progreso del jugador no se pierda.
+* Los sistemas de almacenamiento de datos deben actualizarse para incluir estos nuevos campos y garantizar que el progreso del jugador se conserve.
