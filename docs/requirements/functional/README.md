@@ -1,10 +1,11 @@
 # REQUERIMIENTOS FUNCIONALES
 
 
-### [RF-01: Crear Personaje Simple](RF01_ROMERO_DANIEL.md)
-### [RF-02: Creación de Personaje - Estadísticas](RF02_VILLA_FRANCISCO.md)
+### [RF-01: ](RF01_TOLEDO_CATALINA.md)
+### [RF-02: Sistema de combate](RF02_GONZALEZ_DIEGO.md)
 ### [RF-03: Sistema de Combate Básico](RF03_CHAVEZ_JOSE.)
-### [RF-02: xxxxxx](RF02_XXXXXX.md)
-### [RF-03_01: Guardado de Personajes/Partida](RF03_01_FLORES_PEDRO.md)
-### [RF-03_02: Carga de Personajes/Partida](RF03_02_AYLWIN_JOSE.md)
-### [RF-03_03: Base de Datos para Personajes](RF03_03_BELEÑO_JUAN.md)
+### [RF-04: Creacion de personajes](RF04_ROMERO_DANIEL.md)
+### [RF-05: Sistema de combate por turnos](RF05_VILLA_FRANCISCO.md)
+### [RF-06: Guardado de datos](RF06_FLORES_PEDRO.md)
+### [RF-07: Carga de datos](RF07_AYLWIN_JOSE.md)
+### [RF-08: Base de datos para personajes guardados](RF08_BELEÑO_JUAN.md)
