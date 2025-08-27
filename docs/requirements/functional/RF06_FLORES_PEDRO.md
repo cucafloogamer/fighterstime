@@ -1,4 +1,4 @@
-# RF03_01 - Guardado de datos
+# RF06 - Guardado de datos
 
 Descripción: Este sistema  permitirá al jugador crear y guardar personajes en una lista cuando este se encuentre en partida. El maximo de personajes que este podra guardar sera de 3 personajes en la memoria.
 
